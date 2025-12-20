@@ -1,0 +1,7 @@
+CompileFlags:
+  Add: [
+    -I/home/bobby/playground/c/ct/include,
+    -I/home/bobby/playground/c/ct/src,
+    -I/home/bobby/playground/c/ct/tests,
+  ]
+
