@@ -16,42 +16,29 @@ typedef int32_t ct_status_t;
 #define CT_ERR_NOMEM 4
 #define CT_ERR_INTERNAL 5
 
-// data types
+// data types -> wuth #bytes
 typedef int32_t ct_dtype_t;
-#define CT_F32 0
-#define CT_F64 1
-#define CT_I32 2
+#define CT_F32 4
+#define CT_F64 8
+#define CT_I32 4
 
 // main structs
 typedef struct ct_tensor ct_tensor_t;
 
-#ifdef WITH_MAX_DIM_LIMIT
-#define MAX_DIMS 8
-typedef struct {
-  int32_t ndim;
-  int64_t shape[MAX_DIMS];
-  int64_t stride[MAX_DIMS];
-} ct_shape_t;
-#else
 typedef struct {
   int32_t ndim;
   int64_t *shape;
   int64_t *stride;
 } ct_shape_t;
-#endif // WITH_MAX_DIM_LIMIT
 
 /* create tensor */
 ct_tensor_t *ct_tensor_create(ct_dtype_t dtype, const ct_shape_t *shape);
-/* borrow a tensor never owned */
-void ct_tensor_retain(ct_tensor_t *t);
-/* release a tensor, if owner */
-void ct_tensor_release(ct_tensor_t *t);
-/* return pointer to tensor data */
-void *ct_tensor_data(ct_tensor_t *t);
 /* return tensor data type */
 ct_dtype_t ct_tensor_dtype(const ct_tensor_t *t);
 /* return tensor shape */
 const ct_shape_t *ct_tensor_shape(const ct_tensor_t *t);
+/* return pointer to tensor data */
+void *ct_tensor_data(ct_tensor_t *t);
 
 ct_status_t ct_add(const ct_tensor_t *a, ct_tensor_t *b, ct_tensor_t **out);
 ct_status_t ct_mat_mul(const ct_tensor_t *a, ct_tensor_t *b, ct_tensor_t **out);
