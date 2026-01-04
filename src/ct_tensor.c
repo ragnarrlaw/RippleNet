@@ -1,42 +1,73 @@
-/* tensor v0.0.1 */
-
+/* version v0.0.0 ct_tensor */
 #include "ct.h"
-
-#include <stdatomic.h>
+#include "ct_flags.h"
+#include "ct_storage.h"
+#include <assert.h>
+#include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-typedef uint32_t ct_flags_t;
-
-#define CT_FLAG_OWNS_DATA (1u << 0)
-#define CT_FLAG_BORROWED (1u << 1)
-#define CT_FLAG_CONTIGUOUS (1u << 2)
-#define CT_FLAG_READONLY (1u << 3)
-#define CT_FLAG_CUSTOM_FREE (1u << 4)
+static int64_t calculate_size(const ct_shape_t *shape);
+static void calculate_strides(const ct_shape_t *shape, int64_t *strides_out);
 
 struct ct_tensor {
-  void *data;
+  ct_storage_t *data;
   ct_dtype_t dtype;
   int32_t ndim;
-  int64_t *shape;
-  int64_t *stride;
+  int64_t shape[MAX_DIMS];
+  int64_t stride[MAX_DIMS];
   ct_flags_t flags;
-  atomic_int refcount;
-  void *allocator_ctx;
-  void (*free_fn)(void *ptr, void *allocator_ctx);
 };
 
-ct_tensor_t *ct_tensor_create(ct_context_t *ctx, ct_dtype_t dtype,
-                              const ct_shape_t *shape) {
+ct_tensor_t *ct_tensor_create(ct_dtype_t dtype, const ct_shape_t *shape) {
+  if (dtype != CT_DTYPE_FLOAT32) {
+    fprintf(stderr, "Global restriction: Only FLOAT32 supported in v0.0.0\n");
+    return NULL;
+  }
   return NULL;
 }
 
-ct_tensor_t *ct_tensor_wrap(ct_context_t *ctx, void *data, ct_dtype_t dtype,
-                            const ct_shape_t *shape) {
-  return NULL;
+const ct_storage_t *ct_tensor_data(ct_tensor_t *t) {
+  if (!t)
+    return NULL;
+  return (const ct_storage_t *)t->data;
 }
 
-void ct_tensor_retain(ct_tensor_t *t) {}
-void ct_tensor_release(ct_tensor_t *t) {}
-void *ct_tensor_data(ct_tensor_t *t) { return NULL; }
-ct_dtype_t ct_tensor_dtype(const ct_tensor_t *t) { return 0; }
-const ct_shape_t *ct_tensor_shape(const ct_tensor_t *t) { return NULL; }
+ct_dtype_t ct_tensor_dtype(const ct_tensor_t *t) {
+  if (!t)
+    return 0;
+  return t->dtype;
+}
+
+const ct_shape_t *ct_tensor_shape(const ct_tensor_t *t) {
+  if (!t)
+    return NULL;
+  return (const ct_shape_t *)t->shape;
+}
+
+/* calculate the total size using shape */
+static int64_t calculate_size(const ct_shape_t *shape) {
+  assert(shape != NULL && "Shape must be allocated before");
+  if (shape->ndim <= 0)
+    return 0;
+  int64_t n_elements = 1;
+  for (int32_t i = 0; i < shape->ndim; i++) {
+    n_elements *= shape->shape[i];
+  }
+  return n_elements;
+}
+
+/* calculate default element strides not byte strides (contiguous C-order is
+ * assumed) */
+static void calculate_strides(const ct_shape_t *shape, int64_t *strides_out) {
+  assert(shape != NULL && "Shape allocate shape before the call");
+  assert(shape->ndim > MAX_DIMS && "#MAX_DIMS is 8 in v0.0.0");
+  if (shape->ndim <= 0)
+    return;
+  int64_t acc = 1;
+  for (int32_t i = shape->ndim - 1; i > -1; i--) {
+    strides_out[i] = acc;
+    acc *= shape->shape[i];
+  }
+}
