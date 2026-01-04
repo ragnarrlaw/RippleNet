@@ -19,7 +19,7 @@ typedef enum ct_status {
 
 /* INITIAL VERSIONS ONLY SUPPORT FLOAT 32 */
 typedef enum ct_dtype {
-  CT_DTYPE_FLOAT32 = 0,
+  CT_DTYPE_FLOAT32 = 1,
   CT_DTYPE_FLOAT64,
   CT_DTYPE_INTEGER32,
 } ct_dtype_t;
@@ -38,7 +38,7 @@ typedef struct {
 ct_tensor_t *ct_tensor_create(ct_dtype_t dtype, const ct_shape_t *shape);
 ct_dtype_t ct_tensor_dtype(const ct_tensor_t *t);
 const ct_shape_t *ct_tensor_shape(const ct_tensor_t *t);
-ct_storage_t *ct_tensor_data(ct_tensor_t *t);
+const ct_storage_t *ct_tensor_data(ct_tensor_t *t);
 
 ct_status_t ct_add(const ct_tensor_t *a, ct_tensor_t *b, ct_tensor_t **out);
 ct_status_t ct_mat_mul(const ct_tensor_t *a, ct_tensor_t *b, ct_tensor_t **out);
