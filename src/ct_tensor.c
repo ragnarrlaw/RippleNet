@@ -28,11 +28,23 @@ ct_tensor_t *ct_tensor_create(ct_dtype_t dtype, const ct_shape_t *shape) {
   return NULL;
 }
 
-ct_storage_t *ct_tensor_data(ct_tensor_t *t);
+const ct_storage_t *ct_tensor_data(ct_tensor_t *t) {
+  if (!t)
+    return NULL;
+  return (const ct_storage_t *)t->data;
+}
 
-ct_dtype_t ct_tensor_dtype(const ct_tensor_t *t) { return 0; }
+ct_dtype_t ct_tensor_dtype(const ct_tensor_t *t) {
+  if (!t)
+    return 0;
+  return t->dtype;
+}
 
-const ct_shape_t *ct_tensor_shape(const ct_tensor_t *t) { return NULL; }
+const ct_shape_t *ct_tensor_shape(const ct_tensor_t *t) {
+  if (!t)
+    return NULL;
+  return (const ct_shape_t *)t->shape;
+}
 
 /* calculate the total size using shape */
 static int64_t calculate_size(const ct_shape_t *shape) {
