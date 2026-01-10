@@ -1,6 +1,6 @@
 # RippleNet
 
-![RippleNet Architecture](assets/logo.jpg)
+![RippleNet Architecture](assets/logo.png)
 
 **RippleNet** is a minimalist, research-oriented Deep Learning framework written in pure **C**. 
 
